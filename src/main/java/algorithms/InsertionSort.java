@@ -6,39 +6,36 @@ public class InsertionSort {
 
     private final PerformanceTracker tracker;
 
+    // Конструктор с трекером
     public InsertionSort(PerformanceTracker tracker) {
         this.tracker = tracker;
     }
 
+    // Сортировка массива
     public void sort(int[] arr) {
-        if (arr == null || arr.length <= 1) {
-            return;
+        if (arr == null) {
+            throw new IllegalArgumentException("Array cannot be null");
         }
 
-        int n = arr.length;
+        long startTime = System.nanoTime();
 
-        for (int i = 1; i < n; i++) {
+        for (int i = 1; i < arr.length; i++) {
             int key = arr[i];
-            tracker.incrementArrayAccesses();
-
             int j = i - 1;
 
-            // Optimization for nearly-sorted arrays
-            if (arr[j] <= key) {
-                tracker.incrementComparisons();
-                continue;
-            }
-
             while (j >= 0 && arr[j] > key) {
-                tracker.incrementComparisons();
                 arr[j + 1] = arr[j];
-                tracker.incrementArrayAccesses();
-                tracker.incrementSwaps();
                 j--;
             }
-
             arr[j + 1] = key;
-            tracker.incrementArrayAccesses();
+        }
+
+        long endTime = System.nanoTime();
+        double durationMs = (endTime - startTime) / 1_000_000.0;
+
+        // Сохраняем время сортировки в трекер
+        if (tracker != null) {
+            tracker.addRecord(arr.length, durationMs);
         }
     }
 }
